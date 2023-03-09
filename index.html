@@ -14,7 +14,7 @@
         </a>
         <nav class="home-nav">
             <li class="logged-in"><a href="uploadmusic.html">Upload Music</a></li>
-            <li class="logged-in"><a href="signup.html">Log Out</a></li>
+            <li class="logged-in" id="logout"><a href="signup.html">Log Out</a></li>
             <li class="logged-out"><a href="signup.html">Signup</a></li>
             <li class="logged-out"><a href="login.html">Login</a></li>
             <li><a href="list.html"> Listen</a></li>
@@ -28,9 +28,68 @@
     
     </div>
 
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+
+        
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyB4ts7ctwf0rjI8N7j5wDWqHwhlOSStmHY",
+          authDomain: "waves-2438e.firebaseapp.com",
+          projectId: "waves-2438e",
+          storageBucket: "waves-2438e.appspot.com",
+          messagingSenderId: "1092179264493",
+          appId: "1:1092179264493:web:46439c3763e91e9bb65de4"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        // make auth and firesore refrences
+      
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+
+        const user = auth.currentUser;
+        onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/firebase.User
+            const uid = user.uid;
+            // ...
+        } else {
+            // User is signed out
+            // ...
+        }
+        });
+
+        // update firestore settings
+
+        // db.settings({timestampsInSnapshots: true});
+
+        // logout
+        const logout = document.querySelector('#logout');
+        logout.addEventListener('click',(e)=>{
+            e.preventDefault();
+            auth.signOut().then(()=>{
+                console.log('user signed out')
+            })
+                
+            
+        })
+    </script>
+
+      
+
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"></script> -->
-    <script src="scripts/auth.js"></script> 
-    <script src="scripts/index.js"></script>   
+    <script src="/scripts/auth.js"></script> 
+    <script src="/scripts/index.js"></script>   
     
 </body>
 </html>
