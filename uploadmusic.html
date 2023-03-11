@@ -1,0 +1,309 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>uploadmusic</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- <link rel="stylesheet" href="/css/list.css"> -->
+    <!-- <style>
+        audio{
+            
+        }
+    </style> -->
+</head>
+<body>
+    <header class="main-header">
+        <a href="/"class=logo>
+            <!-- <img src="image/mathew-schwartz-E1n-5Emx38M-unsplash.jpg" alt=""> -->
+            <div class="logo name"> Music Waves</div>
+        </a>
+        <nav class="home-nav">
+            <li><a href="uploadmusic.html">Upload Music</a></li>
+            <li id="logout"><a href="index.html">logout</a></li>
+            <li id="login"><a href="login.html">show who is Login</a></li>
+            <li><a href="list.html"> Listen</a></li>
+        </nav>
+    </header>
+    <!-- about us -->
+    <section class="about">
+    <h1>Music that moves you</h1>
+    <h3>Get to enjoy music in one place</h3>
+    <label>Audio name</label> <input type="text" id="namebox"> <label id="extlab"></label> <br><br>
+    <!-- <label>Image name</label> <input type="text" id="namebox"> <label id="extlab"></label> <br><br> -->
+    <!-- <img id="myimage"> <label id="upprogress"></label><br><br> -->
+    <audio id="mymusic"></audio> <label id="upprogress"></label><br><br>
+    <!-- <button type="signup" class="btn 2">
+        Upload Music
+    </button> -->
+    <!-- <div class="menu_song">
+        <li class="songItem">
+            <span> 01</span>
+            <img src="image/fallingdown.jpg" alt="">
+            <h5> fallingdown
+                <div class="subtitle"> Justin</div>                        
+            </h5>
+            <i class="bi playlistPlay bi-play-circle-fill" id="1"></i>
+        </li>
+        
+   
+      
+    </div> -->
+    
+    <button id="selbtn">Select Audio</button>
+    <button id="upbtn">Upload Audio</button>
+    <button id="downbtn">Retrieve Audio </button>
+    <div class="about-page-circle-1"></div>
+    <div class="about-page-circle-2"></div>
+    <div class="about-page-circle-3"></div>
+    
+    
+    <header class="main-header">
+        <!-- <a href="/"class=logo> -->
+            <!-- <img src="image/mathew-schwartz-E1n-5Emx38M-unsplash.jpg" alt=""> -->
+            <!-- <div class="logo name"> Music Waves</div> -->
+        </a>
+        <nav class="home-nav">
+            <!-- <li><a href="index.html">About us</a></li> -->
+            <!-- <li><a href="signup.html">Signup</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="list.html"> Listen</a></li> -->
+        </nav>
+
+        
+
+    
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js";
+
+        
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyB4ts7ctwf0rjI8N7j5wDWqHwhlOSStmHY",
+          authDomain: "waves-2438e.firebaseapp.com",
+          projectId: "waves-2438e",
+          storageBucket: "waves-2438e.appspot.com",
+          messagingSenderId: "1092179264493",
+          appId: "1:1092179264493:web:46439c3763e91e9bb65de4"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        // make auth and firesore refrences
+      
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+
+        // Initialize Cloud Firestore and get a reference to the service
+        const db = getFirestore(app);
+
+
+        
+        import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-storage.js";
+
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-firestore.js"; 
+
+        const clouddb = getFirestore();
+        // VARABLES AND REFERENCES 
+        var files = [];
+        var reader = new FileReader();
+
+        var namebox = document.getElementById('namebox');
+        var extlab = document.getElementById ('extlab');
+        var myimage = document.getElementById ('myimage');
+        var mymusic = document.getElementById('mymusic');
+        var proglab = document.getElementById('upprogress');
+        var selbtn = document.getElementById('selbtn');
+        var upbtn = document.getElementById('upbtn');
+        var downbtn = document.getElementById('downbtn');
+        
+        var input = document.createElement('input');
+        input.type ='file';
+
+        input.onchange = e =>{
+            files = e.target.files;
+                                // GetExtName
+            var extention = GetFileExt(files[0]);
+            var name = GetFileName(files[0]);
+
+            namebox.value = name;
+            extlab.innerHTML = extention;
+
+            reader.readAsDataURL(files[0]);
+        }
+        reader.onload = function(){
+            mymusic.scr = reader.result;
+        }
+
+        // SELECTION
+
+        selbtn.onclick = function(){
+            input.click();
+        }
+        function GetFileExt(file) {
+            var temp = file.name.split('.');
+            var ext = temp.slice((temp.length-1),(temp.length));
+            return '.' + ext[0];
+
+        }
+        function GetFileName(file) {
+            var temp = file.name.split('.');
+            var fname = temp.slice(0, -1).join('.');
+            return fname;            
+        }
+
+        // UPLOAD PROCESS
+
+        async function uploadProcess() {
+            var AudioToUpload =files[0];
+
+            var AudioName = namebox.value + extlab.innerHTML;
+
+            const metaData = {
+                contentType: AudioToUpload.type
+            }
+            const storage = getStorage();
+
+            const storageRef = sRef(storage, "Music/"+ AudioName );
+
+            const uploadTask = uploadBytesResumable(storageRef, AudioToUpload, metaData);
+
+            uploadTask.on('state-changed', (snapshot)=>{
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                proglab.innerHTML = "upload" + progress + "%";
+            },
+            (error)=>{
+                alert("error: audio not uploaded");
+            },
+            ()=>{
+                getDownloadURL(uploadTask.snapshot.ref).then((getDownloadURL)=>{
+                    // console.log(downloadURL);
+                    SaveURLtoFirestore(getDownloadURL);
+                });
+            }
+            );
+        }
+
+        // function for FIRESTORE DATABASE
+
+        async function SaveURLtoFirestore(url){
+            var name = namebox.value;
+            var ext = extlab.innerHTML;
+
+            // var ref = doc(clouddb, "MusicLinks/"+name);
+            var ref = doc(clouddb, "Music/"+name);
+
+            await setDoc(ref,{
+                AudioName: (name+ext),
+                AudioURL: url
+            })
+        }
+        
+        async function GetAudioFromFirestore(){
+            var name = namebox.value;
+            var ext = extlab.innerHTML;
+            // var ref = doc(clouddb, "MusicLinks/"+name);
+            var ref = doc(clouddb, "Music/"+name);
+            
+            // const docSnap = await getDoc(ref);
+            const docSnap = await getDoc(ref, {
+                AudioName: (name+ext),
+                // AudioURL: url
+                
+            });
+
+            
+
+            if(docSnap.exists()){
+                mymusic.src = docSnap.data().AudioURL;
+                console.log("Document data:", docSnap.data())
+            }else {
+                console.log("no such document")
+            }
+        }
+        upbtn.onclick = uploadProcess;
+        downbtn.onclick = GetAudioFromFirestore;
+        
+        
+        // try {
+        // const docRef = await addDoc(collection(db, "users"), {
+        //     AudioName: (name+ext),
+        //     AudioURL: url
+        // });
+        // console.log("Document written with ID: ", docRef.id);
+        // } catch (e) {
+        // console.error("Error adding document: ", e);
+        // }
+
+     
+      
+
+
+
+
+
+    // login
+        const loginForm = document.querySelector('#login-form');
+        login.addEventListener('click', (e)=>{
+            e.preventDefault();
+
+            // get user information
+
+            var email = document.getElementById('email2').value;
+            var password = document.getElementById('password2').value;
+            
+            console.log(email, password)
+            signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                console.log(userCredential)
+            // Signed in 
+            const user = userCredential.user;
+            // ...
+            })
+            .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            });
+        })
+
+
+            const user = auth.currentUser;
+            onAuthStateChanged(auth, (user) => {
+                console.log(user)
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+                // ...
+                console.log('user logged in', user);
+            } else {
+                // User is signed out
+                // ...
+                console.log('user logged out', user);
+            }
+            });
+
+
+            // logout
+            const logout = document.querySelector('#logout');
+            logout.addEventListener('click',(e)=>{
+                e.preventDefault();
+                auth.signOut().then(()=>{
+                    console.log('user signed out')
+                })
+                    
+                
+            })
+
+    </script>
+        <script src="/scripts/auth.js"></script> 
+        <!-- <script src="/scripts/index.js"></script>  --> -->
+</body>
+</html>
